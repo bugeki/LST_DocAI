@@ -11,3 +11,4 @@ bitsandbytes
 sentence-transformers
 torch
 python-multipart
+seqeval

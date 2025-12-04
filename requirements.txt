@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+pytesseract
+pillow
+pdf2image
+transformers==4.40.0
+datasets
+accelerate
+peft
+bitsandbytes
+sentence-transformers
+torch
+python-multipart

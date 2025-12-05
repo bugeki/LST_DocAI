@@ -81,8 +81,26 @@ def format_prompt(example, tokenizer):
 
 
 def preprocess_function(examples, tokenizer, max_length=512):
-    """Tokenize and format the dataset."""
-    prompts = [format_prompt(ex, tokenizer) for ex in examples]
+    """
+    Tokenize and format the dataset.
+    
+    When batched=True, examples is a dict with column names as keys and lists as values.
+    We need to zip the columns together to get individual examples.
+    """
+    # Extract columns
+    instructions = examples.get('instruction', [])
+    inputs = examples.get('input', [])
+    outputs = examples.get('output', [])
+    
+    # Zip columns together to create individual examples
+    prompts = []
+    for i in range(len(instructions)):
+        ex = {
+            'instruction': instructions[i] if i < len(instructions) else '',
+            'input': inputs[i] if i < len(inputs) else '',
+            'output': outputs[i] if i < len(outputs) else '',
+        }
+        prompts.append(format_prompt(ex, tokenizer))
     
     model_inputs = tokenizer(
         prompts,
@@ -190,9 +208,11 @@ def main():
         train_dataset = Dataset.from_list(train_data)
         val_dataset = Dataset.from_list(val_data) if val_data else None
         
-        datasets = {'train': train_dataset}
+        # Convert to DatasetDict (required for .map() method)
+        datasets_dict = {'train': train_dataset}
         if val_dataset:
-            datasets['validation'] = val_dataset
+            datasets_dict['validation'] = val_dataset
+        datasets = DatasetDict(datasets_dict)
     
     # Preprocess dataset
     print("Preprocessing dataset...")

@@ -109,12 +109,18 @@ def clean_text(text: str) -> str:
     """
     Clean and normalize extracted text.
     
+    - Remove excessive line breaks (before normalizing whitespace)
     - Normalize whitespace
     - Fix common encoding issues
-    - Remove excessive line breaks
     """
-    # Normalize whitespace
-    text = re.sub(r'\s+', ' ', text)
+    # Remove excessive line breaks first (before normalizing whitespace)
+    text = re.sub(r'\n{3,}', '\n\n', text)
+    
+    # Normalize whitespace (but preserve single newlines)
+    # Replace multiple spaces/tabs with single space, but keep single newlines
+    text = re.sub(r'[ \t]+', ' ', text)  # Multiple spaces/tabs -> single space
+    text = re.sub(r' \n', '\n', text)  # Remove space before newline
+    text = re.sub(r'\n ', '\n', text)  # Remove space after newline
     
     # Fix common Turkish encoding issues
     text = text.replace('\u2019', "'")  # Right single quotation mark
@@ -122,9 +128,6 @@ def clean_text(text: str) -> str:
     text = text.replace('\u201d', '"')   # Right double quotation mark
     text = text.replace('\u2013', '-')   # En dash
     text = text.replace('\u2014', '--')  # Em dash
-    
-    # Remove excessive line breaks (keep single line breaks)
-    text = re.sub(r'\n{3,}', '\n\n', text)
     
     return text.strip()
 

@@ -238,7 +238,7 @@ def main():
         save_strategy='epoch',
         save_total_limit=3,
         load_best_model_at_end=True if 'dev' in datasets or 'validation' in datasets else False,
-        metric_for_best_model='f1',
+        metric_for_best_model='f1' if SEQEVAL_AVAILABLE else 'accuracy',
         greater_is_better=True,
         push_to_hub=False,
     )

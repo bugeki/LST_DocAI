@@ -7,6 +7,14 @@ import tempfile, pathlib
 
 app = FastAPI(title='LST-DocAI')
 
+@app.get('/')
+async def root():
+    return {
+        'message': 'LST-DocAI API is running',
+        'docs': '/docs',
+        'endpoint': '/extract_info'
+    }
+
 @app.post('/extract_info')
 async def extract_info(file: UploadFile = File(...)):
     suffix = pathlib.Path(file.filename).suffix or '.txt'
